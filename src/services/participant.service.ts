@@ -1,0 +1,1 @@
+import {ParticipantCollection} from "../models/participant"

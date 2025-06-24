@@ -4,7 +4,6 @@ import { UsersCollection } from '../models/user.model';
 import { jwtConfig } from '../config/jwt';
 import { AppError } from '../utils/error';
 import { FORBIDDEN, UNAUTHORIZED } from '../utils/http-status';
-import logger from '../utils/logger';
 
 export interface AuthRequest extends Request {
   user?: any;
