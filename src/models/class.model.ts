@@ -1,10 +1,9 @@
-import { Schema, model} from 'mongoose';
-import {generateId} from '../utils/generate-id';
+import { Schema, model, Types } from 'mongoose';
 
 
 export interface ClassDocument {
-  id: string;
   name: string;
+  userId: Types.ObjectId; // this is for the user with role 'teacher' !!! very important 
   description: string;
   location: string;
   capacity: number;
@@ -12,22 +11,26 @@ export interface ClassDocument {
   dateEndAt: Date;
   timeStartAt: number;
   timeEndAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const classSchema = new Schema<ClassDocument>({
-    id: {
-        type: String,
-        default: () => `class_${generateId()}`,
-    },
-    name: {
+     name: {
         type: String,
         required: true,
         trim: true,
-}, description: {
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User',
+    },
+    description: {
         type: String,
         required: true,
-        trim: true}
-    ,
+        trim: true,
+    },
     location: {
         type: String,
         required: true,
@@ -45,22 +48,23 @@ export const classSchema = new Schema<ClassDocument>({
     dateEndAt: {
         type: Date,
         required: true,
-    },
-    timeStartAt: {
+    },    timeStartAt: {
         type: Number,
         required: true,
         min: 0,
-        max: 24,
+        max: 23,
     },
     timeEndAt: {
         type: Number,
         required: true,
         min: 0,
-        max: 24,
+        max: 23,
     },
 }, {
     timestamps: true,
 });
+
+classSchema.index({ userId: 1, _id: 1 }, { unique: true });
 
 export const ClassCollection = model<ClassDocument>('Class', classSchema);
 

@@ -1,6 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { generateId } from '../utils/generate-id';
 
 export interface UserDocument extends Document {
   email: string;
@@ -10,13 +9,10 @@ export interface UserDocument extends Document {
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
-
+// note: I removed the 'id' field, we will use the default '_id' field. this is better for relationships and queries. 
+// to know more search ObjectId vs id in mongoose 
 const userSchema = new Schema<UserDocument>(
-  {
-    id: {
-      type: String,
-      default: () => `user_${generateId()}`,
-    },
+  { 
     email: {
       type: String,
       required: true,
