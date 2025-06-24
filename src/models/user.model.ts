@@ -5,7 +5,7 @@ import { generateId } from '../utils/generate-id';
 export interface UserDocument extends Document {
   email: string;
   password: string;
-  role: 'user' | 'admin';
+  role: 'admin'|'principle'| 'teacher'| 'student';
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -31,8 +31,8 @@ const userSchema = new Schema<UserDocument>(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user',
+      enum: ['admin', 'principle', 'teacher', 'student'],
+      default: 'student',
     },
   },
   {
