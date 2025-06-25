@@ -1,5 +1,5 @@
-import { Request, Response } from "express"
-import { EnrollmentCollection } from "../models/enrollment.model"
+import { Response } from "express"
+import * as enrollmentService from "../services/enrollment.service"
 import {
   OK,
   CREATED,
@@ -7,9 +7,18 @@ import {
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
 } from "../utils/http-status"
+import { AuthRequest } from "../middleware/auth.middleware"
 
-export const createEnrollment = async (req: Request, res: Response) => {
+export const createEnrollment = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user.role !== "admin") {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "You do not have permission to create an enrollment",
+      })
+      return
+    }
+
     const { classId, userId } = req.body
 
     if (!classId || !userId) {
@@ -20,7 +29,7 @@ export const createEnrollment = async (req: Request, res: Response) => {
       return
     }
 
-    const newEnrollment = await EnrollmentCollection.create({
+    const newEnrollment = await enrollmentService.enrollUser({
       classId,
       userId,
     })
@@ -30,20 +39,33 @@ export const createEnrollment = async (req: Request, res: Response) => {
       message: "Enrollment created successfully",
       data: { enrollment: newEnrollment },
     })
-  } catch (error) {
-    res.status(INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: "Internal server error",
-    })
+  } catch (error: any) {
+    if (error.message.includes('already enrolled') || error.message.includes('full capacity')) {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: error.message,
+      })
+    } else {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        status: "error",
+        message: "Internal server error",
+      })
+    }
   }
 }
 
-export const getAllEnrollments = async (req: Request, res: Response) => {
+export const getAllEnrollments = async (req: AuthRequest, res: Response) => {
   try {
-    const enrollments = await EnrollmentCollection.find().sort({
-      createdAt: -1,
-    })
-    const total = await EnrollmentCollection.countDocuments()
+    if (req.user.role !== "admin") {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "You do not have permission to view all enrollments",
+      })
+      return
+    }
+
+    const enrollments = await enrollmentService.getAllEnrollments()
+    const total = enrollments.length
 
     res.status(OK).json({
       status: "success",
@@ -52,96 +74,112 @@ export const getAllEnrollments = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(INTERNAL_SERVER_ERROR).json({
       status: "error",
-      message: "internal server error",
+      message: "Internal server error",
     })
   }
 }
 
-export const getEnrollmentById = async (req: Request, res: Response) => {
+export const getEnrollmentById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params
-    const enrollmentData = await EnrollmentCollection.findById(id)
-    if (!enrollmentData) {
-      res.status(NOT_FOUND).json({
-        status: "fail",
-        message: "Enrollment not found",
-      })
-      return
-    }
+    const enrollmentData = await enrollmentService.getEnrollmentById(id)
 
     res.status(OK).json({
       status: "success",
       data: { enrollment: enrollmentData },
     })
-  } catch (error) {
-    res.status(INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: "internal server error",
-    })
+  } catch (error: any) {
+    if (error.message.includes('not found')) {
+      res.status(NOT_FOUND).json({
+        status: "fail",
+        message: error.message,
+      })
+    } else {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        status: "error",
+        message: "Internal server error",
+      })
+    }
   }
 }
 
-export const updateEnrollment = async (req: Request, res: Response) => {
+export const updateEnrollment = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user.role !== "admin" && req.user.role !== "principal") {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "You do not have permission to update an enrollment",
+      })
+      return
+    }
     const { id } = req.params
     const updateData = req.body
 
-    const updatedEnrollment = await EnrollmentCollection.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    )
-    if (!updatedEnrollment) {
-      res.status(NOT_FOUND).json({
-        status: "fail",
-        message: "Enrollment not found",
-      })
-      return
-    }
+    const updatedEnrollment = await enrollmentService.updateEnrollment(id, updateData)
 
     res.status(OK).json({
       status: "success",
-      message: "enrollment updated successfully",
+      message: "Enrollment updated successfully",
       data: { enrollment: updatedEnrollment },
     })
-  } catch (error) {
-    res.status(INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: "internal server error",
-    })
-  }
-}
-
-export const deleteEnrollment = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params
-    const deletedEnrollment = await EnrollmentCollection.findByIdAndDelete(id)
-    if (!deletedEnrollment) {
+  } catch (error: any) {
+    if (error.message.includes('not found')) {
       res.status(NOT_FOUND).json({
         status: "fail",
-        message: "Enrollment not found",
+        message: error.message,
+      })
+    } else {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        status: "error",
+        message: "Internal server error",
+      })
+    }
+  }
+}
+
+export const deleteEnrollment = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user.role !== "admin" ) {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "You do not have permission to delete an enrollment",
       })
       return
     }
+    const { id } = req.params
+    const deletedEnrollment = await enrollmentService.deleteEnrollment(id)
 
     res.status(OK).json({
       status: "success",
-      message: "enrollment deleted successfully",
+      message: "Enrollment deleted successfully",
+      data: { enrollment: deletedEnrollment },
     })
-  } catch (error) {
-    res.status(INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: "internal server error",
-    })
+  } catch (error: any) {
+    if (error.message.includes('not found')) {
+      res.status(NOT_FOUND).json({
+        status: "fail",
+        message: error.message,
+      })
+    } else {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        status: "error",
+        message: "Internal server error",
+      })
+    }
   }
 }
 
-export const getEnrollmentsByClass = async (req: Request, res: Response) => {
+export const getEnrollmentsByClass = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user.role === "student") {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "You do not have permission to view enrollments by class",
+      })
+      return
+    }
     const { classId } = req.params
-    const enrollments = await EnrollmentCollection.find({ classId })
-      .populate("userId") // later select relevant fields!!! Note to self
-      .sort({ createdAt: -1 })
+    const enrollments = await enrollmentService.getEnrollmentsByClass(classId)
 
     res.status(OK).json({
       status: "success",
@@ -155,12 +193,11 @@ export const getEnrollmentsByClass = async (req: Request, res: Response) => {
   }
 }
 
-export const getEnrollmentsByUser = async (req: Request, res: Response) => {
+export const getEnrollmentsByUser = async (req: AuthRequest, res: Response) => {
   try {
+ 
     const { userId } = req.params
-    const enrollments = await EnrollmentCollection.find({ userId })
-      .populate("classId", "name description location")
-      .sort({ createdAt: -1 })
+    const enrollments = await enrollmentService.getEnrollmentsByUser(userId) 
 
     res.status(OK).json({
       status: "success",
@@ -174,31 +211,14 @@ export const getEnrollmentsByUser = async (req: Request, res: Response) => {
   }
 }
 
-export const getStudentsByTeacher = async (req: Request, res: Response) => {
+export const getStudentsByTeacher = async (req: AuthRequest, res: Response) => {
   try {
     const { teacherId } = req.params
-
-    const { ClassCollection } = await import("../models/class.model")
-    const teacherClasses = await ClassCollection.find({ userId: teacherId })
-    if (teacherClasses.length === 0) {
-      res.status(OK).json({
-        status: "success",
-        data: { students: [] },
-      })
-      return
-    }
-
-    const classIds = teacherClasses.map((cls) => cls._id)
-
-    const enrollments = await EnrollmentCollection.find({
-      classId: { $in: classIds },
-    })
-      .populate("userId") // note to self : later select relevant fields!!!
-      .populate("classId", "name")
+    const students = await enrollmentService.getStudentsByTeacher(teacherId)
 
     res.status(OK).json({
       status: "success",
-      data: { students: enrollments },
+      data: { students },
     })
   } catch (error) {
     res.status(INTERNAL_SERVER_ERROR).json({
@@ -207,3 +227,5 @@ export const getStudentsByTeacher = async (req: Request, res: Response) => {
     })
   }
 }
+
+

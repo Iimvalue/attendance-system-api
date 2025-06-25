@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-// Interface for the Leave document
 export interface ILeave extends Document {
   classId: Types.ObjectId;
   studentId: Types.ObjectId;
@@ -12,15 +11,16 @@ export interface ILeave extends Document {
   rejectedAt?: Date;
 }
 
-// Simple Leave Schema
 const leaveSchema = new Schema<ILeave>({
   classId: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
+    ref: 'Class' 
   },
   studentId: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
+    ref: 'Users'
   },
   leavedAt: {
     type: Date,
@@ -28,11 +28,13 @@ const leaveSchema = new Schema<ILeave>({
   },
   leaveType: {
     type: String,
-    required: true
+    required: true,
+    enum: ['sick', 'personal', 'emergency', 'vacation', 'other']
   },
   acceptedBy: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
+    ref: 'Users' 
   },
   acceptedAt: {
     type: Date,
@@ -40,7 +42,8 @@ const leaveSchema = new Schema<ILeave>({
   },
   rejectedBy: {
     type: Schema.Types.ObjectId,
-    required: false
+    required: false,
+    ref: 'Users'
   },
   rejectedAt: {
     type: Date,
@@ -50,5 +53,6 @@ const leaveSchema = new Schema<ILeave>({
   timestamps: true
 });
 
-// Export the model
+leaveSchema.index({ classId: 1, studentId: 1, leavedAt: 1 });
+
 export const Leave = mongoose.model<ILeave>('Leave', leaveSchema);

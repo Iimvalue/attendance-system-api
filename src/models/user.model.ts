@@ -83,4 +83,5 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, this.password)
 }
 
+userSchema.index({ email: 1 }, { unique: true }) 
 export const UsersCollection = model<UserDocument>("Users", userSchema)

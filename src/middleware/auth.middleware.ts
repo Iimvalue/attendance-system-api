@@ -44,7 +44,7 @@ export const authorized = async (
     }
 
     // 3) Check if user still exists
-    const user = await UsersCollection.findOne({ id: decoded.user.id });
+    const user = await UsersCollection.findById(decoded.user.id);
     if (!user) {
       return next(new AppError('User no longer exists', UNAUTHORIZED));
     }

@@ -1,25 +1,36 @@
 import { Router } from 'express';
-import * as EnrollmentController from '../controllers/enrollment.controller';
+import { 
+  createEnrollment,
+  getAllEnrollments,
+  getStudentsByTeacher,
+  getEnrollmentsByClass,
+  getEnrollmentsByUser,
+  getEnrollmentById,
+  updateEnrollment,
+  deleteEnrollment  
+} from '../controllers/enrollment.controller';
+import { authorized } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.post('/', EnrollmentController.createEnrollment);
+router.post('/', authorized, createEnrollment);
 
-router.get('/', EnrollmentController.getAllEnrollments);
+router.get('/', authorized, getAllEnrollments);
 
 // teacher's view of all their students
-router.get('/teacher/:teacherId/students', EnrollmentController.getStudentsByTeacher);
+router.get('/teacher/:teacherId/students', authorized, getStudentsByTeacher);
 
 // students in a specific class
-router.get('/class/:classId', EnrollmentController.getEnrollmentsByClass);
+router.get('/class/:classId', authorized, getEnrollmentsByClass);
 
 // student sees classes they are enrolled in
-router.get('/user/:userId', EnrollmentController.getEnrollmentsByUser);
+router.get('/user/:userId', authorized, getEnrollmentsByUser);
 
-router.get('/:id', EnrollmentController.getEnrollmentById);
+router.get('/:id', authorized, getEnrollmentById);
 
-router.put('/:id', EnrollmentController.updateEnrollment);
+router.put('/:id', authorized, updateEnrollment);
 
-router.delete('/:id', EnrollmentController.deleteEnrollment);
+router.delete('/:id', authorized, deleteEnrollment);
+
 
 export default router;

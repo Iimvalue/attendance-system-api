@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-// Interface for the Attendance document
 export interface IAttendance extends Document {
   classId: Types.ObjectId;
   attendeeId: Types.ObjectId;
@@ -8,7 +7,6 @@ export interface IAttendance extends Document {
   attendedAt: Date;
 }
 
-// Simple Attendance Schema
 const attendanceSchema = new Schema<IAttendance>({
   classId: {
     type: Schema.Types.ObjectId,
@@ -30,5 +28,4 @@ const attendanceSchema = new Schema<IAttendance>({
   timestamps: true
 });
 
-// Export the model
 export const Attendance = mongoose.model<IAttendance>('Attendance', attendanceSchema);
