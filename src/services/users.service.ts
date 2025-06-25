@@ -83,21 +83,21 @@ const readUsers = async (): Promise<
 }
 
 const readTeacherAndStudent = async (): Promise<CreateUserResponse[]> => {
-    const users = await UsersCollection.find({
-      role: { $in: ["teacher", "student"] }
-    });
-    
-    return users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }));
-  };
+  const users = await UsersCollection.find({
+    role: { $in: ["teacher", "student"] },
+  })
+
+  return users.map((user) => ({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  }))
+}
 
 const readUser = async (userId: string): Promise<CreateUserResponse> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
@@ -121,7 +121,7 @@ const updateUser = async (
   userId: string,
   updateData: UpdateUserInput
 ): Promise<CreateUserResponse> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
@@ -155,7 +155,7 @@ const updateUser = async (
 }
 
 const deleteUser = async (userId: string): Promise<void> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
