@@ -206,7 +206,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/users/user/user_01JYH7VBC4J9M4R64G7Z9ZENC4",
+							"raw": "{{base_url}}/api/users/user/:id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -214,7 +214,13 @@
 								"api",
 								"users",
 								"user",
-								"user_01JYH7VBC4J9M4R64G7Z9ZENC4"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -224,10 +230,16 @@
 					"name": "Update User",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Barear {{jwt}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"role\":\"admin\"\n}",
+							"raw": "{\n    \"role\":\"student\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -273,7 +285,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Classs\",\n  \"userId\": \"685b0782784241c3280187b2\",\n  \"description\": \"aa\",\n  \"location\": \"Wellness Center, Room 2\",\n  \"capacity\": 22,\n  \"dateStartAt\": \"2025-07-10\",\n  \"dateEndAt\": \"2025-07-20\",\n  \"timeStartAt\": 12,\n  \"timeEndAt\": 19\n}\n",
+							"raw": "{\n  \"name\": \"Example\",\n  \"userId\": \"6855557df4026a77067855ed\",\n  \"description\": \"aa\",\n  \"location\": \"Wellness Center, Room 2\",\n  \"capacity\": 22,\n  \"dateStartAt\": \"2025-07-10\",\n  \"dateEndAt\": \"2025-07-20\",\n  \"timeStartAt\": 12,\n  \"timeEndAt\": 19\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -324,14 +336,20 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/classes/user_01JYH7VBC4J9M4R64G7Z9ZENC4",
+							"raw": "{{base_url}}/api/classes/:id",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"classes",
-								"user_01JYH7VBC4J9M4R64G7Z9ZENC4"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -457,7 +475,25 @@
 					"name": "Get Attendance By ID",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/classes/attendance/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"classes",
+								"attendance",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -476,7 +512,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/classes/attendance/685c2d9e7887827df51c839f",
+							"raw": "{{base_url}}/api/classes/attendance/:id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -484,7 +520,13 @@
 								"api",
 								"classes",
 								"attendance",
-								"685c2d9e7887827df51c839f"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -496,7 +538,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/classes/attendance/685c2d9e7887827df51c839f",
+							"raw": "{{base_url}}/api/classes/attendance/:id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -504,7 +546,13 @@
 								"api",
 								"classes",
 								"attendance",
-								"685c2d9e7887827df51c839f"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
