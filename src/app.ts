@@ -7,6 +7,7 @@ import { dev, port } from './utils/helpers';
 import authRoutes from './routes/auth.routes';
 import classRoutes from './routes/class.routes';
 import enrollmentRoutes from './routes/enrollment.routes';
+import usersRoutes from './routes/users.routes';
 import { OK, INTERNAL_SERVER_ERROR } from './utils/http-status';
 import { connectDB } from './config/database';
 import { AppError } from './utils/error';
@@ -34,6 +35,8 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/health', healthRoutes);
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {
