@@ -8,6 +8,7 @@ import logger from './utils/logger';
 import { dev, port } from './utils/helpers';
 import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
+import usersRoutes from './routes/users.routes';
 import { OK, INTERNAL_SERVER_ERROR } from './utils/http-status';
 import { connectDB, deleteAllCollections } from './config/database';
 import { AppError } from './utils/error';
@@ -40,6 +41,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 app.use('/api/health', healthRoutes);
 
 // Basic route
