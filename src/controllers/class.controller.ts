@@ -8,6 +8,7 @@ import {
   INTERNAL_SERVER_ERROR,
 } from "../utils/http-status"
 import {AuthRequest} from "../middleware/auth.middleware"
+import { ClassCollection } from "../models/class.model"
 
 export const createClass = async (req: AuthRequest, res: Response) => {
   try {
@@ -30,7 +31,7 @@ export const createClass = async (req: AuthRequest, res: Response) => {
       timeEndAt,
     } = req.body
 
-    // the descritpion is unnecessary to be in condition because it's not important
+    // the description is unnecessary to be in condition because it's not important
     if (
       !name ||
       !userId ||
