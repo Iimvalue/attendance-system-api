@@ -43,7 +43,6 @@ export const authorized = async (
       return next(new AppError('Invalid token type', UNAUTHORIZED));
     }
 
-    // 3) Check if user still exists
     const user = await UsersCollection.findById(decoded.user.id);
     if (!user) {
       return next(new AppError('User no longer exists', UNAUTHORIZED));

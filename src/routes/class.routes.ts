@@ -8,7 +8,7 @@ const router = Router()
 router.post("/", authorized, ClassController.createClass)
 
 router.get("/", authorized, ClassController.getAllClasses)
-// see the teacher classes
+
 router.get("/teacher/:userId", ClassController.getClassesByTeacher)
 router.post("/attendance", ClassAttendanceController.createClassAttendance)
 router.get("/attendance", ClassAttendanceController.getAllClassAttendance)

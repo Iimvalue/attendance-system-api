@@ -97,7 +97,7 @@ const readTeacherAndStudent = async (): Promise<CreateUserResponse[]> => {
   };
 
 const readUser = async (userId: string): Promise<CreateUserResponse> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
@@ -121,7 +121,7 @@ const updateUser = async (
   userId: string,
   updateData: UpdateUserInput
 ): Promise<CreateUserResponse> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
@@ -155,11 +155,11 @@ const updateUser = async (
 }
 
 const deleteUser = async (userId: string): Promise<void> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
-  await UsersCollection.deleteOne({ id: userId })
+  await UsersCollection.findByIdAndDelete(userId)
 }
 
 export {
