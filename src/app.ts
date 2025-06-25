@@ -36,7 +36,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/health', healthRoutes);
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {
