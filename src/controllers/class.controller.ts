@@ -29,9 +29,42 @@ export const createClass = async (req: AuthRequest, res: Response) => {
       timeStartAt,
       timeEndAt,
     } = req.body
-    
-   
-    const newClass = await classService.createClass({
+
+    // the descritpion is unnecessary to be in condition because it's not important
+    if (
+      !name ||
+      !userId ||
+      !location ||
+      !capacity ||
+      !dateStartAt ||
+      !dateEndAt ||
+      timeStartAt === undefined ||
+      timeEndAt === undefined
+    ) {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "All fields are required",
+      })
+      return
+    }
+
+    if (new Date(dateStartAt) >= new Date(dateEndAt)) {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "End date must be after start date",
+      })
+      return
+    }
+
+    if (timeStartAt >= timeEndAt) {
+      res.status(BAD_REQUEST).json({
+        status: "fail",
+        message: "End time must be after start time",
+      })
+      return
+    }
+
+    const newClass = await ClassCollection.create({
       name,
       userId,
       description,
