@@ -21,10 +21,11 @@ export const createClass = async (req: Request, res: Response) => {
       timeStartAt,
       timeEndAt,
     } = req.body
+
+    // the descritpion is unnecessary to be in condition because it's not important
     if (
       !name ||
       !userId ||
-      !description ||
       !location ||
       !capacity ||
       !dateStartAt ||
