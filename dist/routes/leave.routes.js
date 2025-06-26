@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const leave_controller_1 = require("../controllers/leave.controller");
+const express_1 = require("express");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const router = (0, express_1.Router)();
+router.get('/', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), leave_controller_1.getAllLeaves);
+router.post('/', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'student'), leave_controller_1.createLeave);
+router.get('/student/:studentId', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle', 'student'), leave_controller_1.getLeavesByStudentId);
+router.get('/class/:classId', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), leave_controller_1.getLeavesByClassId);
+router.delete('/:leaveId', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle', 'student'), leave_controller_1.deleteLeave);
+router.post('/:leaveId/accept', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), leave_controller_1.acceptLeave);
+router.post('/:leaveId/reject', auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), leave_controller_1.rejectLeave);
+exports.default = router;
