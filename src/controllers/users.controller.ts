@@ -139,7 +139,9 @@ const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    await UserService.deleteUser(req.user._id)
+        const userId = req.params.id || req.user._id
+
+    await UserService.deleteUser(userId)
 
     res.cookie("accessToken", "none", {
       expires: new Date(Date.now() + 5 * 1000),
