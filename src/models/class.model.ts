@@ -24,7 +24,7 @@ export const classSchema = new Schema<ClassDocument>({
     userId: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'User',
+        ref: 'Users',
     },
     description: {
         type: String,

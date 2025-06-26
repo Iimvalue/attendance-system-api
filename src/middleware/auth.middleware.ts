@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 import { UsersCollection } from '../models/user.model';
 import { jwtConfig } from '../config/jwt';
 import { AppError } from '../utils/error';
@@ -44,7 +45,7 @@ export const authorized = async (
     }
 
     // 3) Check if user still exists
-    const user = await UsersCollection.findOne({ id: decoded.user._id });
+    const user = await UsersCollection.findById(decoded.user._id);
     if (!user) {
       return next(new AppError('User no longer exists', UNAUTHORIZED));
     }
@@ -63,7 +64,7 @@ export const authorized = async (
 
 export const restrictTo = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!roles.includes(req.user.role)) {
+    if (!req.user || !roles.includes(req.user.role)) {
       return next(
         new AppError('You do not have permission to perform this action', FORBIDDEN)
       );

@@ -1,14 +1,11 @@
 import {
   OK,
   CREATED,
-  BAD_REQUEST,
-  FORBIDDEN,
-  UNAUTHORIZED,
+  BAD_REQUEST,  
 } from "../utils/http-status"
 import { AuthRequest } from "../middleware/auth.middleware"
-import { Request, Response, NextFunction } from "express"
+import {  Response, NextFunction } from "express"
 import * as UserService from "../services/users.service"
-import { AppError } from "../utils/error"
 
 const createUser = async (
   req: AuthRequest,
@@ -16,17 +13,6 @@ const createUser = async (
   next: NextFunction
 ) => {
   try {
-    if (req.user.role !== "admin") {
-      {
-        return next(
-          new AppError(
-            "You do not have permission to perform this action",
-            UNAUTHORIZED
-          )
-        )
-      }
-    }
-
     const { email, password, role } = req.body
 
     // Check required fields
@@ -63,7 +49,7 @@ const createUser = async (
     res.status(CREATED).json({
       status: "success",
       message: "User created successfully",
-      //   data: newUser,
+       data: newUser,
     })
   } catch (error) {
     next(error)
@@ -128,7 +114,7 @@ const updateUser = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.params.id || req.user.id
+    const userId = req.params.id || req.user._id
     const { email, password, role } = req.body
 
     const updatedUser = await UserService.updateUser(userId, {
@@ -153,7 +139,7 @@ const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    await UserService.deleteUser(req.user.id)
+    await UserService.deleteUser(req.user._id)
 
     res.cookie("accessToken", "none", {
       expires: new Date(Date.now() + 5 * 1000),

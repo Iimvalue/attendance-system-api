@@ -159,7 +159,7 @@ const deleteUser = async (userId: string): Promise<void> => {
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
-  await UsersCollection.deleteOne({ id: userId })
+  await UsersCollection.findByIdAndDelete(userId)
 }
 
 export {

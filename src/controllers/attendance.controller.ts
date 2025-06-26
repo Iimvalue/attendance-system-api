@@ -8,26 +8,46 @@ import {
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
 } from "../utils/http-status"
-import { AuthRequest } from "@/middleware/auth.middleware"
+import { AuthRequest } from "../middleware/auth.middleware"
 
-const getAllClassAttendance = async (req: Request, res: Response) => {
+const getAllClassAttendance = async (req: AuthRequest, res: Response) => {
   try {
-    const classes = await AttendanceCollection.find().sort({ createdAt: -1 })
+    const attendance = await AttendanceCollection.find()
+      .populate({
+        path: "attendeeId",
+        model: "Users",
+        select: "email role createdAt updatedAt",
+      })
+      .populate({
+        path: "attenderId",
+        model: "Users",
+        select: "email role createdAt updatedAt",
+      })
+      .populate({
+        path: "classId",
+        model: "Class",
+        select: "name userId description location capacity dateStartAt dateEndAt timeStartAt timeEndAt",
+      })
+      .sort({ createdAt: -1 })
+    
     const total = await AttendanceCollection.countDocuments()
+    
     res.status(OK).json({
       status: "success",
-      data: { classes, total },
+      data: { attendance, total },
     })
   } catch (error) {
+    console.error("Error in getAllClassAttendance:", error)
     res.status(INTERNAL_SERVER_ERROR).json({
       status: "error",
       message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     })
   }
 }
 
 const getClassAttendanceById = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -53,6 +73,11 @@ const getClassAttendanceById = async (
         model: "Users",
         select: "email role createdAt updatedAt",
       })
+      .populate({
+        path: "classId",
+        model: "Class",
+        select: "name userId description location capacity dateStartAt dateEndAt timeStartAt timeEndAt",
+      })
 
     if (!attendance) {
       res.status(NOT_FOUND).json({
@@ -75,7 +100,7 @@ const getClassAttendanceById = async (
   }
 }
 const createClassAttendance = async (
-  req: Request | AuthRequest,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -86,8 +111,8 @@ const createClassAttendance = async (
       attenderId: bodyAttenderId,
     } = req.body
 
-    // Check if user is authenticated, otherwise use attenderId from body
-    const attenderId = (req as AuthRequest).user?._id || bodyAttenderId
+    // Use authenticated user's ID as attenderId
+    const attenderId = req.user._id || bodyAttenderId
 
     // Validate required fields
     if (!classId || !attendeeId || !attenderId) {
@@ -164,7 +189,7 @@ const createClassAttendance = async (
 }
 
 const updateClassAttendance = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -246,7 +271,7 @@ const updateClassAttendance = async (
 }
 
 const deleteClassAttendance = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {

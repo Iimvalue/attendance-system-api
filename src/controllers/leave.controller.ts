@@ -1,16 +1,9 @@
 import { AuthRequest } from "../middleware/auth.middleware"
 import { Response } from "express"
 import * as leaveService from "../services/leave.service"
-import {UNAUTHORIZED, FORBIDDEN} from "../utils/http-status"
 
 export const createLeave = async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user.role !== "student" && req.user.role !== "admin") {
-      res
-        .status(FORBIDDEN)
-        .json({ message: "You do not have permission to create a leave" })
-      return
-    }
     const leaveData = req.body
     leaveData.studentId = req.user._id 
     const leave = await leaveService.createLeave(leaveData)
@@ -23,12 +16,6 @@ export const createLeave = async (req: AuthRequest, res: Response) => {
 
 export const getAllLeaves = async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user.role !== "admin" && req.user.role !== "principal") {
-      res
-        .status(UNAUTHORIZED)
-        .json({ message: "You do not have permission to view all leaves" })
-      return
-    }
     const leaves = await leaveService.getAllLeaves()
     res.status(200).json(leaves)
   } catch (error) {
@@ -60,12 +47,6 @@ export const getLeavesByClassId = async (req: AuthRequest, res: Response) => {
 }
 export const deleteLeave = async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user.role !== "admin"){
-      res
-        .status(FORBIDDEN)
-        .json({ message: "You do not have permission to delete a leave" })
-      return
-    }
     const leaveId = req.params.leaveId
     const leave = await leaveService.deleteLeave(leaveId)
     if (!leave) {
@@ -80,11 +61,6 @@ export const deleteLeave = async (req: AuthRequest, res: Response) => {
 }
 export const acceptLeave = async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user.role === "student") {
-        res.status(FORBIDDEN)
-          .json({ message: "You do not have permission to accept a leave" })
-        return
-      }
     const leaveId = req.params.leaveId
     const userId = req.user._id
     const leave = await leaveService.acceptLeave(leaveId, userId)
@@ -106,11 +82,6 @@ export const acceptLeave = async (req: AuthRequest, res: Response) => {
 }
 export const rejectLeave = async (req: AuthRequest, res: Response) => {
   try {
-    if (req.user.role === "student") {
-      res.status(FORBIDDEN)
-        .json({ message: "You do not have permission to reject a leave" })
-      return
-    }
     const leaveId = req.params.leaveId
     const userId = req.user._id
     const leave = await leaveService.rejectLeave(leaveId, userId)

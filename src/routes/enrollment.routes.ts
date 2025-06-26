@@ -1,25 +1,23 @@
 import { Router } from 'express';
 import * as EnrollmentController from '../controllers/enrollment.controller';
+import { authorized, restrictTo } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.post('/', EnrollmentController.createEnrollment);
+router.post('/', authorized, restrictTo('admin', 'principle'), EnrollmentController.createEnrollment);
 
-router.get('/', EnrollmentController.getAllEnrollments);
+router.get('/', authorized, restrictTo('admin', 'principle'), EnrollmentController.getAllEnrollments);
 
-// teacher's view of all their students
-router.get('/teacher/:teacherId/students', EnrollmentController.getStudentsByTeacher);
+router.get('/teacher/:teacherId/students', authorized, restrictTo('admin', 'principle', 'teacher'), EnrollmentController.getStudentsByTeacher);
 
-// students in a specific class
-router.get('/class/:classId', EnrollmentController.getEnrollmentsByClass);
+router.get('/class/:classId', authorized, restrictTo('admin', 'principle', 'teacher', 'student'), EnrollmentController.getEnrollmentsByClass);
 
-// student sees classes they are enrolled in
-router.get('/user/:userId', EnrollmentController.getEnrollmentsByUser);
+router.get('/user/:userId', authorized, restrictTo('admin', 'principle', 'teacher', 'student'), EnrollmentController.getEnrollmentsByUser);
 
-router.get('/:id', EnrollmentController.getEnrollmentById);
+router.get('/:id', authorized, restrictTo('admin', 'principle', 'teacher', 'student'), EnrollmentController.getEnrollmentById);
 
-router.put('/:id', EnrollmentController.updateEnrollment);
+router.put('/:id', authorized, restrictTo('admin', 'principle'), EnrollmentController.updateEnrollment);
 
-router.delete('/:id', EnrollmentController.deleteEnrollment);
+router.delete('/:id', authorized, restrictTo('admin'), EnrollmentController.deleteEnrollment);
 
 export default router;

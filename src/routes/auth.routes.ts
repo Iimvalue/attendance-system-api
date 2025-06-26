@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as AuthController from '../controllers/auth.controller';
-import { authorized } from '../middleware/auth.middleware';
+import { authorized, restrictTo } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -10,7 +10,6 @@ router.post('/signin', AuthController.signIn);
 router.post('/signout', AuthController.signOut);
 router.post('/refresh-token', AuthController.refreshToken);
 
-// Authorized routes
 router.delete('/delete-account', authorized, AuthController.deleteAccount);
 
-export default router; 
+export default router;

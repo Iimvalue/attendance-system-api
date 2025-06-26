@@ -139,7 +139,7 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
 
 const deleteAccount = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await AuthService.deleteAccount(req.user.id);
+    await AuthService.deleteAccount(req.user._id);
 
     res.cookie('accessToken', 'none', {
       expires: new Date(Date.now() + 5 * 1000),

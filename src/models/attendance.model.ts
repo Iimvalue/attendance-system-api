@@ -11,8 +11,8 @@ export enum AttendanceStatus {
 export interface IAttendance extends Document {
   _id: Types.ObjectId; // Using default MongoDB _id
   classId: Types.ObjectId;
-  attendeeId: Types.ObjectId; // Changed to ObjectId to match User model
-  attenderId: Types.ObjectId; // Changed to ObjectId to match User model
+  attendeeId: Types.ObjectId; 
+  attenderId: Types.ObjectId; 
   status: AttendanceStatus;
   attendeeAt: Date;
   createdAt: Date;
@@ -29,13 +29,13 @@ const attendanceSchema = new Schema<IAttendance>({
   },
   attendeeId: {
     type: Schema.Types.ObjectId, // Changed to ObjectId
-    ref: 'Users', // Matching your User collection name
+    ref: 'Users', 
     required: true,
     index: true,
   },
   attenderId: {
     type: Schema.Types.ObjectId, // Changed to ObjectId
-    ref: 'Users', // Matching your User collection name
+    ref: 'Users', 
     required: true,
     index: true,
   },
@@ -51,13 +51,13 @@ const attendanceSchema = new Schema<IAttendance>({
     required: true
   }
 }, {
-  timestamps: true, // This adds createdAt and updatedAt automatically
+  timestamps: true, 
   toJSON: {
     virtuals: true,
     versionKey: false,
     transform: function (doc, ret) {
       return {
-        id: ret._id, // Convert _id to id for frontend consistency
+        id: ret._id, 
         classId: ret.classId,
         attendeeId: ret.attendeeId,
         attenderId: ret.attenderId,
@@ -73,7 +73,7 @@ const attendanceSchema = new Schema<IAttendance>({
     versionKey: false,
     transform: function (doc, ret) {
       return {
-        id: ret._id, // Convert _id to id for frontend consistency
+        id: ret._id, 
         classId: ret.classId,
         attendeeId: ret.attendeeId,
         attenderId: ret.attenderId,
@@ -131,10 +131,8 @@ attendanceSchema.statics.getStudentAttendance = function(
   return this.find(query);
 };
 
-// Export the model
 export const AttendanceCollection = mongoose.model<IAttendance>('Attendance', attendanceSchema);
 
-// Helper function to create attendance record
 export async function createAttendanceRecord({
   classId,
   attendeeId,
@@ -149,7 +147,6 @@ export async function createAttendanceRecord({
   attendeeAt?: Date;
 }): Promise<IAttendance> {
   
-  // Check if attendance already exists for today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);

@@ -49,7 +49,7 @@ const refreshToken = async (
   try {
     const decoded = jwt.verify(token, jwtConfig.secret) as {
       user: {
-        id: string
+        _id: string
         email: string
         role: string
       }
@@ -60,7 +60,7 @@ const refreshToken = async (
       throw new AppError("Invalid token type", UNAUTHORIZED)
     }
 
-    const user = await UsersCollection.findOne({ id: decoded.user.id })
+    const user = await UsersCollection.findById(decoded.user._id)
     if (!user) {
       throw new AppError("User not found or inactive", UNAUTHORIZED)
     }
@@ -72,12 +72,12 @@ const refreshToken = async (
 }
 
 const deleteAccount = async (userId: string): Promise<void> => {
-  const user = await UsersCollection.findOne({ id: userId })
+  const user = await UsersCollection.findById(userId)
   if (!user) {
     throw new AppError("User not found", NOT_FOUND)
   }
 
-  await UsersCollection.deleteOne({ id: userId })
+  await UsersCollection.findByIdAndDelete(userId)
 }
 
 const generateTokens = async (
@@ -87,7 +87,7 @@ const generateTokens = async (
     {
       type: "access",
       user: {
-        id: user.id,
+        _id: user._id.toString(),
         email: user.email,
         role: user.role,
         createdAt: user.createdAt,
@@ -101,7 +101,7 @@ const generateTokens = async (
     {
       type: "refresh",
       user: {
-        id: user.id,
+        _id: user._id.toString(),
         email: user.email,
         role: user.role,
         createdAt: user.createdAt,

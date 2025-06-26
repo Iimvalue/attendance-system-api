@@ -4,15 +4,13 @@ import { authorized, restrictTo } from "../middleware/auth.middleware"
 
 const router = Router()
 
-// Public routes
 
-// Authorized routes - with role restrictions
-router.post("/", authorized, restrictTo('admin'), UserController.createUser) // Only admin can create users
-router.get("/", authorized, restrictTo('admin', 'teacher'), UserController.readUsers) // Admin and teachers can view all users
-router.get("/user/:id", authorized, UserController.readUser) // Any authenticated user can view their own profile
-router.put("/update/:id", authorized, UserController.updateUser) // Users can update their own profile (add logic in controller)
-router.get("/principle", authorized, restrictTo('admin'), UserController.readTeacherAndStudents) // Only admin/principle can view this
-router.get("/teacher", authorized, restrictTo('admin', 'teacher'), UserController.readUsers) // Admin and teachers only
-router.delete("/delete", authorized, restrictTo('admin'), UserController.deleteUser) // Only admin can delete users
+router.post("/", authorized, restrictTo('admin', 'principle'), UserController.createUser) 
+router.get("/", authorized, restrictTo('admin', 'principle', 'teacher'), UserController.readUsers) 
+router.get("/user/:id", authorized, UserController.readUser) 
+router.put("/update/:id", authorized, UserController.updateUser) 
+router.get("/principle", authorized, restrictTo('admin', 'principle'), UserController.readTeacherAndStudents) 
+router.get("/teacher", authorized, restrictTo('admin', 'principle', 'teacher'), UserController.readUsers) 
+router.delete("/delete", authorized, restrictTo('admin', 'principle'), UserController.deleteUser) 
 
 export default router
