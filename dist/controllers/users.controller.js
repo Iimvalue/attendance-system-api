@@ -79,7 +79,7 @@ const createUser = async (req, res, next) => {
 exports.createUser = createUser;
 const readUsers = async (req, res, next) => {
     try {
-        const users = await UserService.readUsers();
+        const users = await UserService.readUsers(req);
         res.status(http_status_1.OK).json({
             status: "success",
             data: users,
@@ -92,7 +92,7 @@ const readUsers = async (req, res, next) => {
 exports.readUsers = readUsers;
 const readTeacherAndStudents = async (req, res, next) => {
     try {
-        const teacherAndStudent = await UserService.readTeacherAndStudent();
+        const teacherAndStudent = await UserService.readUsers(req);
         res.status(http_status_1.OK).json({
             status: "success",
             data: teacherAndStudent,

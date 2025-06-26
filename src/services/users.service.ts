@@ -1,6 +1,7 @@
 import { AppError } from "../utils/error"
 import { UsersCollection, UserDocument } from "../models/user.model"
 import { NOT_FOUND, BAD_REQUEST } from "../utils/http-status"
+import { AuthRequest } from "@/middleware/auth.middleware"
 
 // Interface for creating a new user
 interface CreateUserInput {
@@ -69,32 +70,35 @@ const createUser = async (
   }
 }
 
-const readUsers = async (): Promise<
-  CreateUserResponse | CreateUserResponse[]
-> => {
-  const users = await UsersCollection.find()
+const readUsers = async (
+  req: AuthRequest
+): Promise<CreateUserResponse[]> => {
+  const { role } = req.query;
+  
+  // Valid roles
+  const validRoles = ['admin', 'principle', 'teacher', 'student'];
+  
+  // Build query object
+  let query = {};
+  
+  // If role query parameter exists and is valid, filter by role
+  if (role && typeof role === 'string' && validRoles.includes(role)) {
+    query = { role: role };
+  }
+  // If no role specified, fetch all users (empty query object)
+  
+  const users = await UsersCollection.find(query);
+  
   return users.map((user) => ({
     id: user.id,
     email: user.email,
     role: user.role,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-  }))
-}
+  }));
+};
 
-const readTeacherAndStudent = async (): Promise<CreateUserResponse[]> => {
-  const users = await UsersCollection.find({
-    role: { $in: ["teacher", "student"] },
-  })
 
-  return users.map((user) => ({
-    id: user.id,
-    email: user.email,
-    role: user.role,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  }))
-}
 
 const readUser = async (userId: string): Promise<CreateUserResponse> => {
   const user = await UsersCollection.findById(userId)
@@ -168,5 +172,4 @@ export {
   updateUser,
   deleteUser,
   readUser,
-  readTeacherAndStudent,
 }

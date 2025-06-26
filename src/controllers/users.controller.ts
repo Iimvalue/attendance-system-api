@@ -62,7 +62,7 @@ const readUsers = async (
   next: NextFunction
 ) => {
   try {
-    const users = await UserService.readUsers()
+    const users = await UserService.readUsers(req)
 
     res.status(OK).json({
       status: "success",
@@ -79,7 +79,7 @@ const readTeacherAndStudents = async (
   next: NextFunction
 ) => {
   try {
-    const teacherAndStudent = await UserService.readTeacherAndStudent()
+    const teacherAndStudent = await UserService.readUsers(req)
 
     res.status(OK).json({
       status: "success",

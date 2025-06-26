@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readTeacherAndStudent = exports.readUser = exports.deleteUser = exports.updateUser = exports.readUsers = exports.createUser = void 0;
+exports.readUser = exports.deleteUser = exports.updateUser = exports.readUsers = exports.createUser = void 0;
 const error_1 = require("../utils/error");
 const user_model_1 = require("../models/user.model");
 const http_status_1 = require("../utils/http-status");
@@ -45,8 +45,18 @@ const createUser = async (userData) => {
     }
 };
 exports.createUser = createUser;
-const readUsers = async () => {
-    const users = await user_model_1.UsersCollection.find();
+const readUsers = async (req) => {
+    const { role } = req.query;
+    // Valid roles
+    const validRoles = ['admin', 'principle', 'teacher', 'student'];
+    // Build query object
+    let query = {};
+    // If role query parameter exists and is valid, filter by role
+    if (role && typeof role === 'string' && validRoles.includes(role)) {
+        query = { role: role };
+    }
+    // If no role specified, fetch all users (empty query object)
+    const users = await user_model_1.UsersCollection.find(query);
     return users.map((user) => ({
         id: user.id,
         email: user.email,
@@ -56,19 +66,6 @@ const readUsers = async () => {
     }));
 };
 exports.readUsers = readUsers;
-const readTeacherAndStudent = async () => {
-    const users = await user_model_1.UsersCollection.find({
-        role: { $in: ["teacher", "student"] },
-    });
-    return users.map((user) => ({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-    }));
-};
-exports.readTeacherAndStudent = readTeacherAndStudent;
 const readUser = async (userId) => {
     const user = await user_model_1.UsersCollection.findById(userId);
     if (!user) {
