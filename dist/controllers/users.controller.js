@@ -139,7 +139,8 @@ const updateUser = async (req, res, next) => {
 exports.updateUser = updateUser;
 const deleteUser = async (req, res, next) => {
     try {
-        await UserService.deleteUser(req.user._id);
+        const userId = req.params.id || req.user._id;
+        await UserService.deleteUser(userId);
         res.cookie("accessToken", "none", {
             expires: new Date(Date.now() + 5 * 1000),
             httpOnly: true,

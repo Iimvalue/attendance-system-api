@@ -43,5 +43,5 @@ router.get("/user/:id", auth_middleware_1.authorized, UserController.readUser);
 router.put("/update/:id", auth_middleware_1.authorized, UserController.updateUser);
 router.get("/principle", auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), UserController.readTeacherAndStudents);
 router.get("/teacher", auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle', 'teacher'), UserController.readUsers);
-router.delete("/delete", auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), UserController.deleteUser);
+router.delete("/delete/:id", auth_middleware_1.authorized, (0, auth_middleware_1.restrictTo)('admin', 'principle'), UserController.deleteUser);
 exports.default = router;
