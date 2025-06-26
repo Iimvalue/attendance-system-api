@@ -11,6 +11,6 @@ router.get("/user/:id", authorized, UserController.readUser)
 router.put("/update/:id", authorized, UserController.updateUser) 
 router.get("/principle", authorized, restrictTo('admin', 'principle'), UserController.readTeacherAndStudents) 
 router.get("/teacher", authorized, restrictTo('admin', 'principle', 'teacher'), UserController.readUsers) 
-router.delete("/delete", authorized, restrictTo('admin', 'principle'), UserController.deleteUser) 
+router.delete("/delete/:id", authorized, restrictTo('admin', 'principle'), UserController.deleteUser) 
 
 export default router
